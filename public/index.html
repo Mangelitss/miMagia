@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#1a1030" />
+  <title>miMagia</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="icons/icon.svg" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- ====================== BARRA SUPERIOR ====================== -->
+  <header class="topbar">
+    <button id="backBtn" class="icon-btn" hidden aria-label="Volver">←</button>
+    <h1 id="title" class="brand">✨ miMagia</h1>
+    <div class="topbar-right">
+      <span id="userChip" class="user-chip" hidden></span>
+      <button id="logoutBtn" class="icon-btn" hidden aria-label="Cerrar sesión">⏻</button>
+    </div>
+  </header>
+
+  <main id="app">
+
+    <!-- ====================== PANTALLA DE LOGIN ====================== -->
+    <section id="loginView" class="view" hidden>
+      <div class="login-card">
+        <div class="login-logo">✨</div>
+        <h2>miMagia</h2>
+        <p class="muted">Tu cuaderno secreto de rutinas y trucos de magia.</p>
+        <button id="loginBtn" class="btn btn-primary">Entrar con Google</button>
+      </div>
+    </section>
+
+    <!-- ====================== PANTALLA DE CATEGORÍAS ====================== -->
+    <section id="categoriesView" class="view" hidden>
+      <div class="section-head">
+        <h2>Tipos de magia</h2>
+        <button id="addCategoryBtn" class="btn btn-primary btn-sm">➕ Añadir tipo</button>
+      </div>
+      <div id="categoriesGrid" class="grid"></div>
+      <p id="categoriesEmpty" class="empty" hidden>
+        Aún no tienes ningún tipo de magia.<br />Pulsa <b>➕ Añadir tipo</b> para crear el primero.
+      </p>
+    </section>
+
+    <!-- ====================== PANTALLA DE TRUCOS (MÓDULO) ====================== -->
+    <section id="tricksView" class="view" hidden>
+      <div class="section-head">
+        <h2 id="moduleTitle">Trucos</h2>
+        <button id="addTrickBtn" class="btn btn-primary btn-sm">➕ Nuevo truco</button>
+      </div>
+      <div id="tricksList" class="list"></div>
+      <p id="tricksEmpty" class="empty" hidden>
+        Todavía no hay trucos en este módulo.<br />Pulsa <b>➕ Nuevo truco</b> para empezar.
+      </p>
+    </section>
+
+  </main>
+
+  <!-- ====================== MODAL CATEGORÍA ====================== -->
+  <dialog id="categoryDialog" class="dialog">
+    <form method="dialog" class="dialog-form">
+      <h3 id="categoryDialogTitle">Nuevo tipo de magia</h3>
+      <label>Nombre
+        <input id="categoryName" type="text" maxlength="40" placeholder="Ej. Cartomagia" required />
+      </label>
+      <label>Emoji (opcional)
+        <input id="categoryIcon" type="text" maxlength="4" placeholder="🃏" />
+      </label>
+      <label>Color
+        <input id="categoryColor" type="color" value="#7c3aed" />
+      </label>
+      <div class="dialog-actions">
+        <button type="button" class="btn btn-ghost" data-close>Cancelar</button>
+        <button id="saveCategoryBtn" type="submit" class="btn btn-primary">Guardar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- ====================== MODAL TRUCO ====================== -->
+  <dialog id="trickDialog" class="dialog">
+    <form method="dialog" class="dialog-form">
+      <h3 id="trickDialogTitle">Nuevo truco</h3>
+      <label>Nombre
+        <input id="trickName" type="text" maxlength="80" placeholder="Ej. El as viajero" required />
+      </label>
+      <label>Descripción / efecto
+        <textarea id="trickDescription" rows="2" placeholder="Qué ve el espectador"></textarea>
+      </label>
+      <label>Pasos / secreto
+        <textarea id="trickSteps" rows="5" placeholder="Cómo se hace, paso a paso"></textarea>
+      </label>
+      <label>Notas
+        <textarea id="trickNotes" rows="2" placeholder="Trucos de presentación, patter, recordatorios…"></textarea>
+      </label>
+      <div class="dialog-actions">
+        <button type="button" class="btn btn-danger" id="deleteTrickBtn" hidden>Eliminar</button>
+        <span class="spacer"></span>
+        <button type="button" class="btn btn-ghost" data-close>Cancelar</button>
+        <button id="saveTrickBtn" type="submit" class="btn btn-primary">Guardar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" hidden></div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

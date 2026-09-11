@@ -1,0 +1,229 @@
+/* ====================== TEMA ====================== */
+:root {
+  --bg: #14091f;
+  --bg-2: #1a1030;
+  --surface: #241640;
+  --surface-2: #2e1c52;
+  --border: #3d2a63;
+  --text: #f3edff;
+  --muted: #b9a9d9;
+  --primary: #8b5cf6;
+  --primary-strong: #7c3aed;
+  --danger: #ef4444;
+  --radius: 16px;
+  --shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  background:
+    radial-gradient(1200px 600px at 80% -10%, rgba(139, 92, 246, 0.18), transparent),
+    radial-gradient(900px 500px at -10% 10%, rgba(56, 189, 248, 0.08), transparent),
+    var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  min-height: 100vh;
+}
+
+/* ====================== BARRA SUPERIOR ====================== */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  padding-top: max(14px, env(safe-area-inset-top));
+  background: rgba(20, 9, 31, 0.85);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+.brand { font-size: 1.15rem; margin: 0; font-weight: 700; letter-spacing: 0.3px; }
+.topbar-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+.user-chip {
+  font-size: 0.8rem;
+  color: var(--muted);
+  max-width: 42vw;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.icon-btn {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  width: 38px;
+  height: 38px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+.icon-btn:hover { background: var(--surface-2); }
+
+/* ====================== LAYOUT ====================== */
+#app { max-width: 900px; margin: 0 auto; padding: 18px 16px 60px; }
+.view { animation: fade 0.2s ease; }
+@keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.section-head h2 { margin: 0; font-size: 1.2rem; }
+.muted { color: var(--muted); }
+.empty {
+  text-align: center;
+  color: var(--muted);
+  line-height: 1.7;
+  margin-top: 48px;
+}
+
+/* ====================== BOTONES ====================== */
+.btn {
+  border: 1px solid transparent;
+  border-radius: 12px;
+  padding: 11px 16px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.05s ease, filter 0.15s ease;
+}
+.btn:active { transform: translateY(1px); }
+.btn-sm { padding: 8px 12px; font-size: 0.85rem; }
+.btn-primary { background: var(--primary-strong); color: #fff; }
+.btn-primary:hover { filter: brightness(1.1); }
+.btn-ghost { background: transparent; color: var(--muted); border-color: var(--border); }
+.btn-danger { background: transparent; color: var(--danger); border-color: var(--danger); }
+.btn-danger:hover { background: rgba(239, 68, 68, 0.12); }
+
+/* ====================== LOGIN ====================== */
+#loginView { display: grid; place-items: center; min-height: 70vh; }
+.login-card {
+  text-align: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 40px 28px;
+  box-shadow: var(--shadow);
+  max-width: 340px;
+}
+.login-logo { font-size: 3.4rem; margin-bottom: 6px; }
+.login-card h2 { margin: 0 0 6px; }
+.login-card .btn { margin-top: 20px; width: 100%; }
+
+/* ====================== GRID DE CATEGORÍAS ====================== */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 14px;
+}
+.card {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 16px;
+  cursor: pointer;
+  min-height: 128px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  transition: transform 0.12s ease, border-color 0.15s ease;
+}
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--cat-color, var(--primary));
+  opacity: 0.12;
+}
+.card:hover { transform: translateY(-3px); border-color: var(--cat-color, var(--primary)); }
+.card-icon { font-size: 2.2rem; position: relative; }
+.card-name { font-weight: 700; font-size: 1.02rem; position: relative; }
+.card-count { color: var(--muted); font-size: 0.8rem; position: relative; }
+.card-edit {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(0,0,0,0.25);
+  border: none;
+  color: var(--text);
+  border-radius: 8px;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  z-index: 2;
+  opacity: 0.7;
+}
+.card-edit:hover { opacity: 1; }
+
+/* ====================== LISTA DE TRUCOS ====================== */
+.list { display: flex; flex-direction: column; gap: 12px; }
+.trick {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+.trick:hover { border-color: var(--primary); }
+.trick h3 { margin: 0 0 4px; font-size: 1.05rem; }
+.trick p { margin: 0; color: var(--muted); font-size: 0.9rem; line-height: 1.5; }
+
+/* ====================== DIÁLOGOS ====================== */
+.dialog {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-2);
+  color: var(--text);
+  padding: 0;
+  width: min(460px, 92vw);
+  box-shadow: var(--shadow);
+}
+.dialog::backdrop { background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(3px); }
+.dialog-form { padding: 22px; display: flex; flex-direction: column; gap: 14px; }
+.dialog-form h3 { margin: 0; }
+.dialog-form label { display: flex; flex-direction: column; gap: 6px; font-size: 0.85rem; color: var(--muted); }
+.dialog-form input,
+.dialog-form textarea {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  padding: 10px 12px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  resize: vertical;
+}
+.dialog-form input[type="color"] { height: 42px; padding: 4px; cursor: pointer; }
+.dialog-form input:focus,
+.dialog-form textarea:focus { outline: 2px solid var(--primary); border-color: transparent; }
+.dialog-actions { display: flex; align-items: center; gap: 10px; margin-top: 6px; }
+.dialog-actions .spacer { flex: 1; }
+
+/* ====================== TOAST ====================== */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 28px;
+  transform: translateX(-50%);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 12px 18px;
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  z-index: 100;
+  font-size: 0.9rem;
+  animation: fade 0.2s ease;
+}
