@@ -12,7 +12,7 @@
 export const firebaseConfig = {
   apiKey: "AIzaSyCCyv_PkNlC0dFUFVwRzuoydYUV1SjJfxc",
   authDomain: "mimagia-d9092.firebaseapp.com",
-  projectId: "https://mimagia-d9092-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "mimagia-d9092",
   storageBucket: "mimagia-d9092.firebasestorage.app",
   messagingSenderId: "398194275058",
   appId: "1:398194275058:web:8089c05fbffe6bf4c1566b",
