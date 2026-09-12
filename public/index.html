@@ -17,8 +17,7 @@
     <button id="backBtn" class="icon-btn" hidden aria-label="Volver">←</button>
     <h1 id="title" class="brand">✨ miMagia</h1>
     <div class="topbar-right">
-      <span id="userChip" class="user-chip" hidden></span>
-      <button id="logoutBtn" class="icon-btn" hidden aria-label="Cerrar sesión">⏻</button>
+      <button id="settingsBtn" class="icon-btn" hidden aria-label="Ajustes">⚙️</button>
     </div>
   </header>
 
@@ -56,6 +55,46 @@
       <p id="tricksEmpty" class="empty" hidden>
         Todavía no hay trucos en este módulo.<br />Pulsa <b>➕ Nuevo truco</b> para empezar.
       </p>
+    </section>
+
+    <!-- ====================== PANTALLA DE AJUSTES ====================== -->
+    <section id="settingsView" class="view" hidden>
+      <div class="section-head">
+        <h2>⚙️ Ajustes</h2>
+      </div>
+
+      <div class="settings-group">
+        <h3>Cuenta</h3>
+        <p id="settingsUser" class="muted"></p>
+        <button id="logoutBtn" class="btn btn-ghost">Cerrar sesión</button>
+      </div>
+
+      <div class="settings-group">
+        <h3>Resumen</h3>
+        <p id="settingsStats" class="muted">Cargando…</p>
+      </div>
+
+      <div class="settings-group">
+        <h3>Tipos de magia (paneles)</h3>
+        <div id="settingsCategories" class="settings-list"></div>
+        <button id="settingsAddCategory" class="btn btn-primary btn-sm">➕ Añadir tipo</button>
+      </div>
+
+      <div class="settings-group dev">
+        <h3>🛠️ Herramientas de desarrollo</h3>
+        <div class="settings-actions">
+          <button id="seedBtn" class="btn btn-ghost">✨ Cargar datos de ejemplo</button>
+          <button id="exportBtn" class="btn btn-ghost">⬇️ Exportar datos (JSON)</button>
+          <button id="importBtn" class="btn btn-ghost">⬆️ Importar datos (JSON)</button>
+          <input id="importFile" type="file" accept="application/json,.json" hidden />
+        </div>
+      </div>
+
+      <div class="settings-group danger">
+        <h3>⚠️ Zona peligrosa</h3>
+        <p class="muted">Borra todos tus tipos y trucos. No se puede deshacer.</p>
+        <button id="wipeBtn" class="btn btn-danger">🗑️ Borrar TODOS mis datos</button>
+      </div>
     </section>
 
   </main>
