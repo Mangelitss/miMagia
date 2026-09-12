@@ -10,10 +10,10 @@
 // ============================================================
 
 export const firebaseConfig = {
-  apiKey: "PEGA_AQUI_TU_API_KEY",
-  authDomain: "TU_PROYECTO.firebaseapp.com",
-  projectId: "TU_PROYECTO",
-  storageBucket: "TU_PROYECTO.appspot.com",
-  messagingSenderId: "PEGA_AQUI_TU_SENDER_ID",
-  appId: "PEGA_AQUI_TU_APP_ID",
+  apiKey: "AIzaSyCCyv_PkNlC0dFUFVwRzuoydYUV1SjJfxc",
+  authDomain: "mimagia-d9092.firebaseapp.com",
+  projectId: "mimagia-d9092",
+  storageBucket: "mimagia-d9092.firebasestorage.app",
+  messagingSenderId: "398194275058",
+  appId: "1:398194275058:web:8089c05fbffe6bf4c1566b",
 };

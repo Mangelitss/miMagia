@@ -23,6 +23,7 @@ import {
   orderBy,
   serverTimestamp,
   getDocs,
+  writeBatch,
 } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
 import { firebaseConfig } from "./firebase-config.js";
@@ -49,14 +50,19 @@ const views = {
   login: $("loginView"),
   categories: $("categoriesView"),
   tricks: $("tricksView"),
+  settings: $("settingsView"),
 };
 
+let currentView = "login";
+
 function showView(name) {
+  currentView = name;
   Object.entries(views).forEach(([k, el]) => (el.hidden = k !== name));
-  $("backBtn").hidden = name !== "tricks";
   const loggedIn = name !== "login";
-  $("logoutBtn").hidden = !loggedIn;
-  $("userChip").hidden = !loggedIn;
+  // La flecha atrás aparece en las vistas internas.
+  $("backBtn").hidden = !(name === "tricks" || name === "settings");
+  // El engranaje de ajustes, cuando hay sesión y no estamos ya en ajustes.
+  $("settingsBtn").hidden = !loggedIn || name === "settings";
 }
 
 function toast(msg) {
@@ -81,15 +87,18 @@ $("loginBtn").addEventListener("click", async () => {
 
 $("logoutBtn").addEventListener("click", () => signOut(auth));
 
+let currentUser = null;
+
 onAuthStateChanged(auth, (user) => {
   cleanupSubscriptions();
   if (user) {
     uid = user.uid;
-    $("userChip").textContent = user.displayName || user.email || "";
+    currentUser = user;
     watchCategories();
     goToCategories();
   } else {
     uid = null;
+    currentUser = null;
     categories = [];
     currentCategory = null;
     showView("login");
@@ -127,6 +136,7 @@ function goToTricks(category) {
 }
 
 $("backBtn").addEventListener("click", goToCategories);
+$("settingsBtn").addEventListener("click", goToSettings);
 
 // ============================================================
 //  CATEGORÍAS
@@ -138,6 +148,7 @@ function watchCategories() {
     (snap) => {
       categories = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
       renderCategories();
+      refreshSettingsIfOpen();
     },
     (err) => { console.error(err); toast("Error al cargar tipos de magia."); }
   );
@@ -309,6 +320,207 @@ $("deleteTrickBtn").addEventListener("click", async () => {
 document.querySelectorAll("[data-close]").forEach((btn) =>
   btn.addEventListener("click", () => btn.closest("dialog").close())
 );
+
+// ============================================================
+//  AJUSTES  (módulo de desarrollo)
+// ============================================================
+function goToSettings() {
+  $("title").textContent = "⚙️ Ajustes";
+  if (unsubscribeTricks) { unsubscribeTricks(); unsubscribeTricks = null; }
+  currentCategory = null;
+  showView("settings");
+  renderSettings();
+}
+
+async function renderSettings() {
+  // Cuenta
+  $("settingsUser").textContent = currentUser
+    ? `${currentUser.displayName || "Sin nombre"} · ${currentUser.email || ""}`
+    : "";
+
+  // Lista de tipos con nº de trucos y botón de borrar
+  const wrap = $("settingsCategories");
+  wrap.innerHTML = "";
+  let totalTricks = 0;
+
+  const counts = await Promise.all(
+    categories.map(async (c) => {
+      try { return (await getDocs(tricksCol(c.id))).size; } catch { return 0; }
+    })
+  );
+
+  if (categories.length === 0) {
+    wrap.innerHTML = `<p class="settings-empty">No hay ningún tipo todavía.</p>`;
+  } else {
+    categories.forEach((c, i) => {
+      totalTricks += counts[i];
+      const row = document.createElement("div");
+      row.className = "settings-row";
+      row.innerHTML = `
+        <span class="dot" style="background:${c.color || "#8b5cf6"}"></span>
+        <span class="row-name"></span>
+        <span class="row-count">${counts[i]} truco${counts[i] === 1 ? "" : "s"}</span>
+        <button class="row-del" title="Borrar tipo">🗑️</button>`;
+      row.querySelector(".row-name").textContent = `${c.icono || "✨"} ${c.nombre}`;
+      row.querySelector(".row-del").addEventListener("click", () => deleteCategory(c, counts[i]));
+      wrap.appendChild(row);
+    });
+  }
+
+  // Resumen
+  $("settingsStats").textContent =
+    `${categories.length} tipo${categories.length === 1 ? "" : "s"} de magia · ${totalTricks} truco${totalTricks === 1 ? "" : "s"} en total.`;
+}
+
+// Al crear/editar/borrar categorías, si estamos en Ajustes, refrescamos la vista.
+function refreshSettingsIfOpen() {
+  if (currentView === "settings") renderSettings();
+}
+
+// ----- Añadir tipo desde Ajustes (reutiliza el modal) -----
+$("settingsAddCategory").addEventListener("click", () => openCategoryDialog(null));
+
+// ----- Borrar un tipo y todos sus trucos -----
+async function deleteCategory(cat, count) {
+  const msg = count > 0
+    ? `¿Borrar "${cat.nombre}" y sus ${count} truco(s)? No se puede deshacer.`
+    : `¿Borrar "${cat.nombre}"?`;
+  if (!confirm(msg)) return;
+  try {
+    // Borra la subcolección de trucos en lotes y luego la categoría.
+    const snap = await getDocs(tricksCol(cat.id));
+    let batch = writeBatch(db);
+    let n = 0;
+    for (const d of snap.docs) {
+      batch.delete(d.ref);
+      if (++n === 400) { await batch.commit(); batch = writeBatch(db); n = 0; }
+    }
+    if (n > 0) await batch.commit();
+    await deleteDoc(doc(categoriesCol(), cat.id));
+    toast("Tipo eliminado.");
+    renderSettings();
+  } catch (err) {
+    console.error(err);
+    toast("No se pudo borrar el tipo.");
+  }
+}
+
+// ----- Datos de ejemplo -----
+const DEMO = [
+  { nombre: "Cartomagia", icono: "🃏", color: "#7c3aed", trucos: [
+    { nombre: "El as viajero", descripcion: "Un as salta de un montón a otro.", pasos: "Doble volteo + empalme.", notas: "Presentar despacio." },
+    { nombre: "Cartas ambiciosas", descripcion: "La carta firmada sube siempre arriba.", pasos: "Control + doble.", notas: "" },
+  ]},
+  { nombre: "Numismagia", icono: "🪙", color: "#0ea5e9", trucos: [
+    { nombre: "Moneda que desaparece", descripcion: "La moneda se esfuma en la mano.", pasos: "Empalme francés.", notas: "" },
+  ]},
+  { nombre: "Ilusionismo", icono: "🎩", color: "#f59e0b", trucos: [] },
+  { nombre: "Magia tecnológica", icono: "📱", color: "#22c55e", trucos: [] },
+];
+
+$("seedBtn").addEventListener("click", async () => {
+  if (!confirm("¿Cargar tipos y trucos de ejemplo? Se añadirán a los que ya tengas.")) return;
+  try {
+    for (const cat of DEMO) {
+      const catRef = await addDoc(categoriesCol(), {
+        nombre: cat.nombre, icono: cat.icono, color: cat.color, createdAt: serverTimestamp(),
+      });
+      for (const t of cat.trucos) {
+        await addDoc(tricksCol(catRef.id), { ...t, createdAt: serverTimestamp(), updatedAt: serverTimestamp() });
+      }
+    }
+    toast("Datos de ejemplo cargados.");
+    renderSettings();
+  } catch (err) {
+    console.error(err);
+    toast("No se pudieron cargar los datos.");
+  }
+});
+
+// ----- Exportar a JSON -----
+$("exportBtn").addEventListener("click", async () => {
+  try {
+    const data = { app: "miMagia", exportadoEl: new Date().toISOString(), tipos: [] };
+    for (const c of categories) {
+      const snap = await getDocs(tricksCol(c.id));
+      data.tipos.push({
+        nombre: c.nombre, icono: c.icono || "✨", color: c.color || "#8b5cf6",
+        trucos: snap.docs.map((d) => {
+          const { nombre, descripcion, pasos, notas } = d.data();
+          return { nombre, descripcion: descripcion || "", pasos: pasos || "", notas: notas || "" };
+        }),
+      });
+    }
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `mimagia-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast("Datos exportados.");
+  } catch (err) {
+    console.error(err);
+    toast("No se pudo exportar.");
+  }
+});
+
+// ----- Importar desde JSON -----
+$("importBtn").addEventListener("click", () => $("importFile").click());
+
+$("importFile").addEventListener("change", async (e) => {
+  const file = e.target.files[0];
+  e.target.value = ""; // permite volver a elegir el mismo archivo
+  if (!file) return;
+  try {
+    const data = JSON.parse(await file.text());
+    if (!Array.isArray(data.tipos)) throw new Error("Formato no válido");
+    if (!confirm(`¿Importar ${data.tipos.length} tipo(s)? Se añadirán a tus datos actuales.`)) return;
+    for (const cat of data.tipos) {
+      if (!cat.nombre) continue;
+      const catRef = await addDoc(categoriesCol(), {
+        nombre: String(cat.nombre), icono: cat.icono || "✨", color: cat.color || "#8b5cf6",
+        createdAt: serverTimestamp(),
+      });
+      for (const t of cat.trucos || []) {
+        if (!t.nombre) continue;
+        await addDoc(tricksCol(catRef.id), {
+          nombre: String(t.nombre), descripcion: t.descripcion || "", pasos: t.pasos || "", notas: t.notas || "",
+          createdAt: serverTimestamp(), updatedAt: serverTimestamp(),
+        });
+      }
+    }
+    toast("Datos importados.");
+    renderSettings();
+  } catch (err) {
+    console.error(err);
+    toast("Archivo no válido o error al importar.");
+  }
+});
+
+// ----- Borrar TODOS los datos -----
+$("wipeBtn").addEventListener("click", async () => {
+  if (!confirm("⚠️ Esto borrará TODOS tus tipos y trucos. ¿Seguro?")) return;
+  if (!confirm("Última confirmación: no se puede deshacer. ¿Borrar todo?")) return;
+  try {
+    for (const c of categories) {
+      const snap = await getDocs(tricksCol(c.id));
+      let batch = writeBatch(db);
+      let n = 0;
+      for (const d of snap.docs) {
+        batch.delete(d.ref);
+        if (++n === 400) { await batch.commit(); batch = writeBatch(db); n = 0; }
+      }
+      if (n > 0) await batch.commit();
+      await deleteDoc(doc(categoriesCol(), c.id));
+    }
+    toast("Todos los datos han sido borrados.");
+    renderSettings();
+  } catch (err) {
+    console.error(err);
+    toast("No se pudo borrar todo.");
+  }
+});
 
 // ============================================================
 //  SERVICE WORKER (PWA / offline del "cascarón")
