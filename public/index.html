@@ -4,10 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#1a1030" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="miMagia" />
   <title>miMagia</title>
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="icons/icon.svg" type="image/svg+xml" />
-  <link rel="apple-touch-icon" href="icons/icon.svg" />
+  <link rel="icon" href="icons/icon-192.png" type="image/png" sizes="192x192" />
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -17,6 +21,9 @@
     <button id="backBtn" class="icon-btn" hidden aria-label="Volver">←</button>
     <h1 id="title" class="brand">✨ miMagia</h1>
     <div class="topbar-right">
+      <span id="offlinePill" class="offline-pill" hidden title="Los cambios se guardan en el móvil y se sincronizan al volver la conexión">📴<span class="pill-text"> Sin conexión</span></span>
+      <button id="searchBtn" class="icon-btn" hidden aria-label="Buscar">🔍</button>
+      <button id="setlistsBtn" class="icon-btn" hidden aria-label="Repertorios">🎭</button>
       <button id="settingsBtn" class="icon-btn" hidden aria-label="Ajustes">⚙️</button>
     </div>
   </header>
@@ -57,6 +64,59 @@
       </p>
     </section>
 
+    <!-- ====================== DETALLE DE UN TRUCO ====================== -->
+    <section id="trickView" class="view" hidden>
+      <div class="section-head">
+        <div>
+          <p id="trickViewCategory" class="muted small"></p>
+          <h2 id="trickViewName"></h2>
+        </div>
+        <button id="editTrickBtn" class="btn btn-primary btn-sm">✎ Editar</button>
+      </div>
+      <div id="trickViewMeta" class="meta-row"></div>
+      <div id="trickViewBody" class="detail"></div>
+    </section>
+
+    <!-- ====================== BUSCADOR ====================== -->
+    <section id="searchView" class="view" hidden>
+      <input id="searchInput" class="search-input" type="search" placeholder="Buscar por nombre, pasos, notas, etiquetas…" autocomplete="off" />
+      <p id="searchInfo" class="muted small"></p>
+      <div id="searchResults" class="list"></div>
+    </section>
+
+    <!-- ====================== REPERTORIOS ====================== -->
+    <section id="setlistsView" class="view" hidden>
+      <div class="section-head">
+        <h2>🎭 Repertorios</h2>
+        <button id="addSetlistBtn" class="btn btn-primary btn-sm">➕ Nuevo</button>
+      </div>
+      <div id="setlistsList" class="list"></div>
+      <p id="setlistsEmpty" class="empty" hidden>
+        Un repertorio es la lista ordenada de trucos de una actuación.<br />
+        Pulsa <b>➕ Nuevo</b> para preparar el primero.
+      </p>
+    </section>
+
+    <!-- ====================== DETALLE DE UN REPERTORIO ====================== -->
+    <section id="setlistView" class="view" hidden>
+      <div class="section-head">
+        <div>
+          <h2 id="setlistName"></h2>
+          <p id="setlistInfo" class="muted small"></p>
+        </div>
+        <button id="editSetlistBtn" class="icon-btn" aria-label="Editar repertorio">✎</button>
+      </div>
+      <p id="setlistNotes" class="muted"></p>
+      <div class="row-actions">
+        <button id="performBtn" class="btn btn-primary">▶️ Modo actuación</button>
+        <button id="pickTricksBtn" class="btn btn-ghost">➕ Añadir trucos</button>
+      </div>
+      <div id="setlistTricks" class="list"></div>
+      <p id="setlistEmpty" class="empty" hidden>
+        Este repertorio está vacío.<br />Pulsa <b>➕ Añadir trucos</b>.
+      </p>
+    </section>
+
     <!-- ====================== PANTALLA DE AJUSTES ====================== -->
     <section id="settingsView" class="view" hidden>
       <div class="section-head">
@@ -92,12 +152,28 @@
 
       <div class="settings-group danger">
         <h3>⚠️ Zona peligrosa</h3>
-        <p class="muted">Borra todos tus tipos y trucos. No se puede deshacer.</p>
+        <p class="muted">Borra todos tus tipos, trucos y repertorios. No se puede deshacer.</p>
         <button id="wipeBtn" class="btn btn-danger">🗑️ Borrar TODOS mis datos</button>
       </div>
     </section>
 
   </main>
+
+  <!-- ====================== MODO ACTUACIÓN (pantalla completa) ====================== -->
+  <section id="performView" class="perform" hidden>
+    <header class="perform-bar">
+      <button id="performClose" class="icon-btn" aria-label="Salir">✕</button>
+      <span id="performProgress" class="perform-progress"></span>
+      <span class="spacer"></span>
+      <button id="performSmaller" class="icon-btn" aria-label="Letra más pequeña">A−</button>
+      <button id="performBigger" class="icon-btn" aria-label="Letra más grande">A+</button>
+    </header>
+    <article id="performCard" class="perform-card"></article>
+    <footer class="perform-nav">
+      <button id="performPrev" class="btn btn-ghost">← Anterior</button>
+      <button id="performNext" class="btn btn-primary">Siguiente →</button>
+    </footer>
+  </section>
 
   <!-- ====================== MODAL CATEGORÍA ====================== -->
   <dialog id="categoryDialog" class="dialog">
@@ -113,6 +189,8 @@
         <input id="categoryColor" type="color" value="#7c3aed" />
       </label>
       <div class="dialog-actions">
+        <button type="button" class="btn btn-danger" id="deleteCategoryBtn" hidden>Eliminar</button>
+        <span class="spacer"></span>
         <button type="button" class="btn btn-ghost" data-close>Cancelar</button>
         <button id="saveCategoryBtn" type="submit" class="btn btn-primary">Guardar</button>
       </div>
@@ -126,11 +204,38 @@
       <label>Nombre
         <input id="trickName" type="text" maxlength="80" placeholder="Ej. El as viajero" required />
       </label>
+      <label>Tipo de magia
+        <select id="trickCategory"></select>
+      </label>
       <label>Descripción / efecto
         <textarea id="trickDescription" rows="2" placeholder="Qué ve el espectador"></textarea>
       </label>
       <label>Pasos / secreto
         <textarea id="trickSteps" rows="5" placeholder="Cómo se hace, paso a paso"></textarea>
+      </label>
+      <label>Material necesario
+        <textarea id="trickMaterial" rows="2" placeholder="Baraja, moneda de 2 €, rotulador…"></textarea>
+      </label>
+      <div class="form-row">
+        <label>Duración (min)
+          <input id="trickDuration" type="number" min="0" max="600" step="1" inputmode="numeric" placeholder="5" />
+        </label>
+        <label>Dificultad
+          <select id="trickDifficulty">
+            <option value="0">—</option>
+            <option value="1">★ Fácil</option>
+            <option value="2">★★</option>
+            <option value="3">★★★ Media</option>
+            <option value="4">★★★★</option>
+            <option value="5">★★★★★ Difícil</option>
+          </select>
+        </label>
+      </div>
+      <label>Etiquetas (separadas por comas)
+        <input id="trickTags" type="text" maxlength="200" placeholder="close-up, apertura, sin preparación" />
+      </label>
+      <label>Vídeo de referencia (URL)
+        <input id="trickVideo" type="url" maxlength="500" placeholder="https://…" />
       </label>
       <label>Notas
         <textarea id="trickNotes" rows="2" placeholder="Trucos de presentación, patter, recordatorios…"></textarea>
@@ -140,6 +245,43 @@
         <span class="spacer"></span>
         <button type="button" class="btn btn-ghost" data-close>Cancelar</button>
         <button id="saveTrickBtn" type="submit" class="btn btn-primary">Guardar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- ====================== MODAL REPERTORIO ====================== -->
+  <dialog id="setlistDialog" class="dialog">
+    <form method="dialog" class="dialog-form">
+      <h3 id="setlistDialogTitle">Nuevo repertorio</h3>
+      <label>Nombre
+        <input id="setlistNameInput" type="text" maxlength="80" placeholder="Ej. Cumpleaños de Lucía" required />
+      </label>
+      <label>Fecha (opcional)
+        <input id="setlistDate" type="date" />
+      </label>
+      <label>Notas
+        <textarea id="setlistNotesInput" rows="3" placeholder="Lugar, público, duración prevista…"></textarea>
+      </label>
+      <div class="dialog-actions">
+        <button type="button" class="btn btn-danger" id="deleteSetlistBtn" hidden>Eliminar</button>
+        <span class="spacer"></span>
+        <button type="button" class="btn btn-ghost" data-close>Cancelar</button>
+        <button id="saveSetlistBtn" type="submit" class="btn btn-primary">Guardar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- ====================== MODAL ELEGIR TRUCOS ====================== -->
+  <dialog id="pickerDialog" class="dialog">
+    <form method="dialog" class="dialog-form">
+      <h3>Añadir trucos al repertorio</h3>
+      <input id="pickerSearch" class="search-input" type="search" placeholder="Filtrar…" autocomplete="off" />
+      <div id="pickerList" class="picker-list"></div>
+      <div class="dialog-actions">
+        <span id="pickerCount" class="muted small"></span>
+        <span class="spacer"></span>
+        <button type="button" class="btn btn-ghost" data-close>Cancelar</button>
+        <button id="pickerSave" type="submit" class="btn btn-primary">Añadir</button>
       </div>
     </form>
   </dialog>

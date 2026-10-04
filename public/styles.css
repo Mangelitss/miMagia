@@ -261,3 +261,177 @@ html, body {
   font-size: 0.9rem;
   animation: fade 0.2s ease;
 }
+
+/* ====================== UTILIDADES ====================== */
+/* Sin esto, reglas como "display: flex/grid" ganan al atributo hidden. */
+[hidden] { display: none !important; }
+.small { font-size: 0.82rem; }
+.pre { white-space: pre-wrap; }
+.spacer { flex: 1; }
+
+.offline-pill {
+  font-size: 0.75rem;
+  color: #fde68a;
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.45);
+  border-radius: 999px;
+  padding: 4px 10px;
+  white-space: nowrap;
+}
+
+/* ====================== CHIPS / META ====================== */
+.meta-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.chip {
+  --chip: var(--border);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+  color: var(--text);
+  background: color-mix(in srgb, var(--chip) 22%, transparent);
+  border: 1px solid color-mix(in srgb, var(--chip) 60%, transparent);
+  border-radius: 999px;
+  padding: 3px 9px;
+  font-family: inherit;
+}
+.chip.tag { color: var(--muted); }
+button.chip { cursor: pointer; }
+button.chip:hover { color: var(--text); border-color: var(--primary); }
+
+/* ====================== FORMULARIOS ====================== */
+.dialog-form select {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  padding: 10px 12px;
+  font-size: 0.95rem;
+  font-family: inherit;
+}
+.dialog-form select:focus { outline: 2px solid var(--primary); border-color: transparent; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.dialog { max-height: 92vh; }
+.dialog-form { max-height: 92vh; overflow-y: auto; }
+
+.search-input {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--text);
+  padding: 12px 14px;
+  font-size: 1rem;
+  font-family: inherit;
+}
+.search-input:focus { outline: 2px solid var(--primary); border-color: transparent; }
+#searchView .search-input { margin-bottom: 10px; }
+
+/* ====================== DETALLE DE TRUCO ====================== */
+#trickView .section-head { align-items: flex-start; }
+#trickViewCategory { margin: 0 0 4px; }
+#trickViewName { font-size: 1.5rem; }
+.detail { margin-top: 18px; display: flex; flex-direction: column; gap: 14px; }
+.detail section,
+.perform-card section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px 16px;
+}
+.detail h4,
+.perform-card h4 { margin: 0 0 6px; font-size: 0.85rem; color: var(--muted); font-weight: 600; }
+.detail p { margin: 0; line-height: 1.6; }
+.detail a, .perform-card a { color: #c4b5fd; word-break: break-all; }
+
+/* ====================== REPERTORIOS ====================== */
+.row-actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 4px 0 16px; }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.setlist-row { display: flex; align-items: center; gap: 12px; }
+.setlist-num {
+  flex-shrink: 0;
+  width: 30px; height: 30px;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  background: var(--surface-2);
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+.setlist-main { flex: 1; min-width: 0; }
+.setlist-main .meta-row { margin-top: 6px; }
+.setlist-tools { display: flex; gap: 4px; flex-shrink: 0; }
+.mini-btn {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-2);
+  color: var(--text);
+  cursor: pointer;
+}
+.mini-btn:disabled { opacity: 0.3; cursor: default; }
+.mini-btn.danger { color: var(--danger); border-color: rgba(239, 68, 68, 0.5); }
+
+.picker-list { max-height: 50vh; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
+.picker-group { margin: 10px 0 2px; font-weight: 700; font-size: 0.85rem; color: var(--muted); }
+.dialog-form label.picker-item {
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  color: var(--text);
+  font-size: 0.95rem;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: var(--surface);
+  cursor: pointer;
+}
+.picker-item > span:first-of-type { flex: 1; }
+.picker-item.disabled { opacity: 0.55; cursor: default; }
+.picker-item input { width: 18px; height: 18px; accent-color: var(--primary); }
+
+/* ====================== MODO ACTUACIÓN ====================== */
+body.performing { overflow: hidden; }
+.perform {
+  --perform-scale: 1;
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  padding: max(10px, env(safe-area-inset-top)) 14px max(12px, env(safe-area-inset-bottom));
+}
+.perform-bar { display: flex; align-items: center; gap: 8px; padding-bottom: 10px; }
+.perform-progress { color: var(--muted); font-size: 0.9rem; }
+.perform-card {
+  flex: 1;
+  overflow-y: auto;
+  max-width: 820px;
+  width: 100%;
+  margin: 0 auto;
+  font-size: calc(1.2rem * var(--perform-scale));
+  line-height: 1.55;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-bottom: 12px;
+}
+.perform-card h2 { margin: 6px 0 0; font-size: 1.7em; line-height: 1.2; }
+.perform-card .meta-row { margin-top: 0; }
+.perform-card .chip { font-size: 0.7em; }
+.perform-card h4 { font-size: 0.7em; }
+.perform-card p { margin: 0; }
+.perform-nav {
+  display: flex;
+  gap: 12px;
+  max-width: 820px;
+  width: 100%;
+  margin: 0 auto;
+}
+.perform-nav .btn { flex: 1; padding: 16px; font-size: 1.05rem; }
+
+@media (max-width: 420px) {
+  .topbar { gap: 6px; padding-left: 10px; padding-right: 10px; }
+  .topbar-right { gap: 6px; }
+  .icon-btn { width: 34px; height: 34px; font-size: 1rem; }
+  .brand { font-size: 1rem; }
+  .pill-text { display: none; }
+}
