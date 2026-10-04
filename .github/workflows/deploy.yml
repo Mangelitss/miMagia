@@ -1,0 +1,42 @@
+# Publica la app en Firebase (Hosting + reglas de Firestore) cada vez que se
+# fusiona algo en main. En los pull requests solo comprueba que el JS es válido.
+#
+# Requiere el secreto FIREBASE_SERVICE_ACCOUNT en GitHub (ver README).
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Comprobar sintaxis de JavaScript
+        run: |
+          for f in public/*.js; do
+            node --input-type=module --check < "$f" && echo "OK $f"
+          done
+      - name: Comprobar JSON
+        run: |
+          for f in firebase.json firestore.indexes.json .firebaserc public/manifest.webmanifest; do
+            node -e "JSON.parse(require('fs').readFileSync('$f','utf8'))" && echo "OK $f"
+          done
+
+  deploy:
+    needs: check
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+      - name: Desplegar en Firebase
+        run: npx --yes firebase-tools@latest deploy --only hosting,firestore --project mimagia-d9092 --non-interactive
