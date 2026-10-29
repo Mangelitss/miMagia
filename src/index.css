@@ -1,0 +1,72 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-crema: #f1e4c8;
+  --color-papel: #e6d2a8;
+  --color-papel-oscuro: #d4b98a;
+  --color-rojo: #9e1b1b;
+  --color-rojo-oscuro: #6d1010;
+  --color-tinta: #1d1712;
+  --color-tinta-suave: #4a3d30;
+  --color-dorado: #b8892b;
+  --color-dorado-claro: #d9b25f;
+
+  --font-cartel: 'Rye', 'Abril Fatface', serif;
+  --font-titulo: 'Abril Fatface', 'Rye', serif;
+  --font-texto: 'Libre Baskerville', Georgia, serif;
+
+  --shadow-cartel: 0 1px 0 #fff8 inset, 0 10px 24px -12px #1d171299, 0 2px 4px #1d171233;
+}
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply bg-crema font-texto text-tinta antialiased;
+    min-height: 100dvh;
+    background-image:
+      radial-gradient(ellipse at center, transparent 55%, #6d4a1f33 100%),
+      url('./assets/papel.svg');
+    background-attachment: fixed;
+    overscroll-behavior-y: none;
+  }
+
+  ::selection {
+    @apply bg-rojo text-crema;
+  }
+
+  button {
+    cursor: pointer;
+  }
+}
+
+@utility texto-relieve {
+  text-shadow:
+    1px 1px 0 var(--color-crema),
+    2px 2px 0 #1d171233;
+}
+
+@utility borde-doble {
+  border: 3px double var(--color-tinta);
+  outline: 1px solid var(--color-dorado);
+  outline-offset: 3px;
+}
+
+@utility pb-seguro {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+@utility pt-seguro {
+  padding-top: env(safe-area-inset-top);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

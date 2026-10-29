@@ -1,0 +1,17 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // App privada: solo estas cuentas (deben coincidir con CUENTAS_PERMITIDAS en src/config.ts).
+    // Las dos cuentas comparten los mismos datos.
+    function esPermitida() {
+      return request.auth != null
+        && request.auth.token.email_verified == true
+        && request.auth.token.email in ['mangelamrgz.22@gmail.com', 'miguel541yt@gmail.com'];
+    }
+
+    match /{document=**} {
+      allow read, write: if esPermitida();
+    }
+  }
+}
