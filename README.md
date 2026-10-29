@@ -29,7 +29,7 @@ y las dos ven y editan los mismos datos. `firestore.rules` repite esa lista: si 
 - **Pull request**: compila y publica una URL de vista previa (7 días) que se comenta en el PR.
 - **Push a `main`**: publica en producción (Hosting + reglas de Firestore).
 
-Necesita el secreto `FIREBASE_SERVICE_ACCOUNT_MIMAGIA_APP` en GitHub (lo crea `firebase init hosting:github`). Para iniciar sesión en una URL de vista previa,
+Necesita el secreto `FIREBASE_SERVICE_ACCOUNT_MIMAGIA_APP` en GitHub (JSON de la cuenta `firebase-adminsdk-fbsvc`, con los roles Administrador de Firebase y Consumidor de Service Usage). Para iniciar sesión en una URL de vista previa,
 añade su dominio en Firebase Console → Authentication → Settings → Authorized domains.
 
 ## Versiones

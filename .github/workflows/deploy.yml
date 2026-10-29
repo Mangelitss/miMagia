@@ -2,7 +2,7 @@
 #  - Pull request: URL de vista previa (canal temporal de 7 días) comentada en el PR.
 #  - Push a main: despliegue en producción (Hosting + reglas de Firestore).
 #
-# Requiere el secreto FIREBASE_SERVICE_ACCOUNT_MIMAGIA_APP en GitHub (creado con `firebase init hosting:github`).
+# Requiere el secreto FIREBASE_SERVICE_ACCOUNT en GitHub (JSON de la cuenta firebase-adminsdk-fbsvc con los roles Administrador de Firebase y Consumidor de Service Usage).
 name: Deploy
 
 on:
@@ -31,7 +31,7 @@ jobs:
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
-          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_MIMAGIA_APP }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           projectId: mimagia-app
           expires: 7d
 
@@ -48,6 +48,6 @@ jobs:
       - run: npm run build
       - uses: google-github-actions/auth@v2
         with:
-          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_MIMAGIA_APP }}
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
       - name: Desplegar en Firebase
         run: npx --yes firebase-tools@latest deploy --only hosting,firestore --project mimagia-app --non-interactive
